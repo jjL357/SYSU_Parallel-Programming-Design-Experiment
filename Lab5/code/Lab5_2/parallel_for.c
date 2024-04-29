@@ -7,11 +7,12 @@ struct parallel_args {
     void *functor_args; // 执行函数所需参数
     int start, end, inc;  // 开始位置 结束位置 增量
     pthread_mutex_t *mutex; // 互斥锁
+    void *(*functor)(void *);
 };
 
 // 打包成动态链接库的入口函数
 void parallel_for(int start, int end, int inc, 
-                        void *(*functor)(void*), void *arg, int num_threads,pthread_mutex_t*mutex) {
+                    void *(*functor)(void*)    , void *arg, int num_threads,pthread_mutex_t*mutex) {
     
     pthread_t threads[num_threads];
     struct parallel_args args_data[num_threads];
@@ -26,7 +27,13 @@ void parallel_for(int start, int end, int inc,
         args_data[i].end = start + (i + 1) * per_task;
         args_data[i].inc = inc;
         args_data[i].mutex = mutex;
-        pthread_create(&threads[i], NULL, functor, (void *)&args_data[i]);
+        args_data[i].functor = functor;
+       
+    }
+
+    // 创建并启动线程
+    for (int i = 0; i < num_threads; i++) {
+         pthread_create(&threads[i], NULL, args_data[i].functor, (void *)&args_data[i]);
     }
 
     // 等待所有线程结束

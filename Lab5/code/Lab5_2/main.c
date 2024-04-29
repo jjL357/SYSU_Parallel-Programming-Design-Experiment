@@ -52,10 +52,10 @@ void *matrix_multiply(void *args) {
                 sum += A[i * n + l] * B[l * k + j];
             }
              // 加锁
-            pthread_mutex_lock(mutex);
+            //pthread_mutex_lock(mutex);
             C[i * k + j] = sum;
             // 解锁
-            pthread_mutex_unlock(mutex);
+            //pthread_mutex_unlock(mutex);
         }
       
     }

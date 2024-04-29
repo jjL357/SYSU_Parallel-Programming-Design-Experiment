@@ -3,9 +3,9 @@
 #include <time.h>
 #include <pthread.h>
 
-extern void parallel_for(int start, int end, int step, void (*func)(int, void*), void* arg, int num_threads,pthread_mutex_t*mutex);
+extern void parallel_for(int start, int end, int step, void *(*func)(void*), void* arg, int num_threads,pthread_mutex_t*mutex);
 
-int thread_num = 4;
+
 pthread_mutex_t mutex;
 // 随机生成矩阵
 void generate_matrix(int rows, int cols, double *matrix) {
@@ -28,6 +28,7 @@ struct parallel_args {
     void *functor_args;
     int start, end, inc; 
     pthread_mutex_t *mutex;
+    void *(*functor)(void *);
 };
 
 // 矩阵乘法
@@ -53,10 +54,10 @@ void *matrix_multiply(void *args) {
                 sum += A[i * n + l] * B[l * k + j];
             }
             // 加锁
-            pthread_mutex_lock(mutex);
+            //pthread_mutex_lock(mutex);
             C[i * k + j] = sum;
             // 解锁
-            pthread_mutex_unlock(mutex);
+            //pthread_mutex_unlock(mutex);
         }
       
     }
@@ -68,7 +69,7 @@ int main() {
     for(int dimension = 128 ; dimension <= 2048 ;dimension *=2){
         printf("----------------------------\n");
         printf("The dimension of matrices: %d\n",dimension);
-    for(thread_num = 1; thread_num <= 16 ; thread_num *= 2){
+    for(int thread_num = 1; thread_num <= 16 ; thread_num *= 2){
         printf("The num of threads: %d\n",thread_num);
     int m = dimension, n = dimension, k = dimension; // 矩阵规模
     double *A = (double *)malloc(m * n * sizeof(double));
