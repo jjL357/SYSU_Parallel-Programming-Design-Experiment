@@ -27,8 +27,7 @@ void parallel_for(int start, int end, int inc,
         args_data[i].end = start + (i + 1) * per_task;
         args_data[i].inc = inc;
         args_data[i].mutex = mutex;
-        args_data[i].functor = functor;
-       
+        args_data[i].functor = functor;       
     }
 
     // 创建并启动线程
