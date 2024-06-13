@@ -1,20 +1,25 @@
 import matplotlib.pyplot as plt
 
-# Thread block sizes
-thread_block_sizes = [4, 8, 16, 32, 64]
+# 数据
+input_dims = ['3x128x128', '3x256x256', '3x512x512']
+global_memory_times = [0.03, 0.04, 0.05]
+shared_memory_times = [0.03, 0.03, 0.05]
+im2col_times = [0.03, 0.25, 1.07]
+cuDNN_times = [0.039844, 0.039543, 0.041879]
 
-# Time for convolution (ms)
-times = [6.52, 17.28, 22.07, 41.44, 0.01]
+# 绘制图表
+plt.figure(figsize=(10, 6))
 
-plt.figure(figsize=(8, 6))
-plt.plot(thread_block_sizes, times, marker='o', linestyle='-', color='b', linewidth=2)
+plt.plot(input_dims, global_memory_times, label='Global Memory Time (ms)', marker='o')
+plt.plot(input_dims, shared_memory_times, label='Shared Memory Time (ms)', marker='o')
+plt.plot(input_dims, im2col_times, label='im2col Time (ms)', marker='o')
+plt.plot(input_dims, cuDNN_times, label='cuDNN Time (ms)', marker='o')
 
-plt.title('Time for Convolution vs. Thread Block Size')
-plt.xlabel('Thread Block Size')
-plt.ylabel('Time for Convolution (ms)')
+plt.xlabel('Input Dimensions')
+plt.ylabel('Time (ms)')
+plt.title('Convolution Time Comparison (Input Size: 128x128, 256x256, 512x512)')
+plt.legend()
 plt.grid(True)
-plt.xticks(thread_block_sizes)
-plt.yticks(range(0, 50, 5))
+plt.xticks(rotation=45)
 plt.tight_layout()
-
 plt.show()
